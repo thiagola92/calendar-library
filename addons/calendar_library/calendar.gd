@@ -778,9 +778,7 @@ class Date:
 	
 	## Returns [code]true[/code] if this Date is the same as the provided date.
 	func is_equal(date: Date) -> bool:
-		if year == date.year and month == date.month and day == date.day:
-			return true
-		return false
+		return year == date.year and month == date.month and day == date.day
 	
 	
 	# Returns the number of days in the month. If the year
