@@ -2,35 +2,24 @@
 
 [ext_resource type="Script" uid="uid://uv3e2mxq5fc4" path="res://addons/calendar_library/demo/calendar_demo.gd" id="1_qxlq3"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ubfdl"]
+bg_color = Color(0.13333334, 0.14901961, 0.1764706, 1)
+
 [sub_resource type="LabelSettings" id="LabelSettings_15vha"]
 font_size = 30
 font_color = Color(0.254902, 0.282353, 0.32549, 1)
 
-[node name="CalendarDemo" type="Control" unique_id=387079006]
-layout_mode = 3
+[node name="CalendarDemo" type="PanelContainer" unique_id=738467572]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ubfdl")
 script = ExtResource("1_qxlq3")
 
-[node name="BackgroundColor" type="ColorRect" parent="." unique_id=662722096]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.133333, 0.14902, 0.176471, 1)
-
 [node name="Padding" type="MarginContainer" parent="." unique_id=644377909]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20

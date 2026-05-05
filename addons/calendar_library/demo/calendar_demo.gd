@@ -1,4 +1,4 @@
-extends Control
+extends PanelContainer
 
 
 func _ready() -> void:
