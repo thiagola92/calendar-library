@@ -52,18 +52,18 @@ enum WeekNumberSystem {
 ## The weekday that is considered the first day of the week.
 ## Takes a [enum Time.Weekday] value where Sunday = 0 and Saturday = 6 
 ## (to align with Godot's Weekday standard)
-var first_weekday: Time.Weekday
+var first_weekday: Time.Weekday = Time.WEEKDAY_MONDAY
 
 ## The week number system to use when calculating week numbers.
 ## See [enum WeekNumberSystem]
-var week_number_system : WeekNumberSystem
+var week_number_system : WeekNumberSystem = WeekNumberSystem.WEEK_NUMBER_FOUR_DAY
 
 ## The calendar's localization settings for retrieving
 ## preformatted values. Each calendar object is assigned a CalendarLocale
 ## resource which default to English. To customize localization, 
 ## create and configure a new CalendarLocale
 ## resource, then assign it to [code]calendar_locale[/code].
-var calendar_locale: CalendarLocale
+var calendar_locale: CalendarLocale = CalendarLocale.new()
 
 
 # Regex used for getting placeholder combinations in get_date_formatted()
@@ -71,9 +71,6 @@ var _posix_regex = RegEx.new()
 
 
 func _init() -> void:
-	first_weekday = Time.WEEKDAY_MONDAY
-	week_number_system = WeekNumberSystem.WEEK_NUMBER_FOUR_DAY
-	calendar_locale = CalendarLocale.new()
 	_posix_regex.compile(_POSIX_PLACEHOLDERS)
 
 
@@ -711,20 +708,17 @@ class Date:
 	extends RefCounted
 	
 	## The year of this date.
-	var year: int
+	var year: int = 1
 	
 	## The month of this date. An integer value from 1 to 12 representing January to December.
-	var month: int
+	var month: int = 1
 	
 	## The day of this date. An integer value from 1 to 31.
-	var day: int
+	var day: int = 1
 	
 	
 	@warning_ignore("shadowed_variable")
 	func _init(year: int, month: int, day: int) -> void:
-		self.year = 1
-		self.month = 1
-		self.day = 1
 		set_date(year, month, day)
 	
 	
