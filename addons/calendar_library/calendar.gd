@@ -725,27 +725,22 @@ class Date:
 	## Returns [code]true[/code] or [code]false[/code]
 	## if the date is a valid date or not.
 	func is_valid() -> bool:
-		return _validate()
-	
-	
-	func _validate() -> bool:
-		var valid: bool = true
 		var error_msg = "Date is not valid (%s, %s, %s): " % [year, month, day]
-		if month < 1 or month > 12:
-			error_msg += "Month has to be 1 - 12. "
-			valid = false
-		elif day < 1:
-			error_msg += "Days can not be less than 1. "
-			valid = false
-		elif day > _get_days_in_month():
-			error_msg += "Too many days in month. "
-			valid = false
-		if month == 2 and day == 29 and not is_leap_year():
-			error_msg += "Day can not be 29 in a non-leap year February. "
-			valid = false
 		
-		if not valid:
-			push_error(error_msg)
+		if month < 1 or month > 12:
+			push_error(error_msg + "Month has to be 1 - 12. ")
+			return false
+		
+		if day < 1:
+			push_error(error_msg + "Days can not be less than 1. ")
+			return false
+		
+		if day > _get_days_in_month():
+			push_error(error_msg + "Too many days in month. ")
+			return false
+		
+		if month == 2 and day == 29 and not is_leap_year():
+			push_error(error_msg + "Day can not be 29 in a non-leap year February. ")
 			return false
 		
 		return true
