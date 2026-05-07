@@ -27,7 +27,7 @@ func _setup_language_button() -> void:
 func _setup_date_label(date: Date = null) -> void:
 	var calendar: Calendar = %YearCalendar.calendar
 	
-	date = date if date else calendar.get_today()
+	date = date if date else Date.get_today()
 	%DateLabel.text = calendar.get_date_formatted(date.year, date.month, date.day, "%A, %-d %B")
 
 

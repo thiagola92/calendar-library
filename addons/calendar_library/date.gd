@@ -7,17 +7,24 @@ extends RefCounted
 ## situations where information about the entire date is practical (rather
 ## than only a year, a month, or a day).
 
+
 ## The year of this date.
+## [br][br]
+## [b]Note[/b]: Read-only variable.
 var year: int:
 	get: return _year
 	set(y): push_error("Can't modify a read-only property.")
 
 ## The month of this date. An integer value from 1 to 12 representing January to December.
+## [br][br]
+## [b]Note[/b]: Read-only variable.
 var month: int:
 	get: return _month
 	set(m): push_error("Can't modify a read-only property.")
 
 ## The day of this date. An integer value from 1 to 31.
+## [br][br]
+## [b]Note[/b]: Read-only variable.
 var day: int:
 	get: return _day
 	set(d): push_error("Can't modify a read-only property.")
@@ -72,8 +79,10 @@ func _to_string() -> String:
 	return "%d-%02d-%02d" % [year, month, day]
 
 
-## Set the year, month and day of this Date. Throws an error if the 
-## date is not a valid date.
+## Attempt to set the year, month and day of this Date.
+## [br][br]
+## Returns [code]true[/code] if everything was changed,
+## otherwise returns [code]false[/code] because the date was invalid.
 @warning_ignore("shadowed_variable")
 func set_date(year: int, month: int, day: int) -> bool:
 	var previous_year := _year
@@ -84,7 +93,7 @@ func set_date(year: int, month: int, day: int) -> bool:
 	_month = month
 	_day = day
 	
-	if not is_valid():
+	if not DateUtil.is_valid(year, month, day):
 		_year = previous_year
 		_month = previous_month
 		_day = previous_day
@@ -96,36 +105,6 @@ func set_date(year: int, month: int, day: int) -> bool:
 ## Returns a new Date object which is a copy of this Date.
 func duplicate() -> Date:
 	return Date.new(year, month, day)
-
-
-## Returns [code]true[/code] or [code]false[/code]
-## if the date is a valid date or not.
-func is_valid() -> bool:
-	var error_msg = "Date is not valid (%s, %s, %s): " % [year, month, day]
-	
-	if month < 1 or month > 12:
-		push_error(error_msg + "Month has to be 1 - 12. ")
-		return false
-	
-	if day < 1:
-		push_error(error_msg + "Days can not be less than 1. ")
-		return false
-	
-	if day > get_days_in_month():
-		push_error(error_msg + "Too many days in month. ")
-		return false
-	
-	if month == 2 and day == 29 and not is_leap_year():
-		push_error(error_msg + "Day can not be 29 in a non-leap year February. ")
-		return false
-	
-	return true
-
-
-## Returns [code]true[/code] or [code]false[/code] depending on whether
-## the current date is a leap year or not.
-func is_leap_year() -> bool:
-	return (year % 4 == 0 and (year % 100 != 0 or year % 400 == 0))
 
 
 ## Returns [code]true[/code] if this Date is before the provided date.
@@ -159,57 +138,8 @@ func is_equal(date: Date) -> bool:
 	return year == date.year and month == date.month and day == date.day
 
 
-## Returns the number of days in the current month. If the year
-## is a leap year February will return 29 days.
-func get_days_in_month() -> int:
-	var days_in_month: Array[int] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-	
-	if month == 2 and is_leap_year():
-		return 29
-	
-	return days_in_month[month - 1]
-
-
-## Returns the weekday of the current date as a [code]Time.Weekday[/code] 
-## value where Sunday = 0 and Saturday = 6.
-@warning_ignore("integer_division")
-func get_weekday() -> Time.Weekday:
-	# Zeller's Congruence algorithm to find the day of the week
-	var calc_year := year
-	var calc_month := month
-	if calc_month < 3:
-		calc_month += 12
-		calc_year -= 1
-	var k: int = calc_year % 100
-	var j: int = int(calc_year / 100)
-	var f = day + (13 * (calc_month + 1) / 5) + k + (k / 4) + (j / 4) - 2 * j
-	
-	# Adjusted Zeller's Congruence for Godot's Sunday = 0
-	return (f + 6) % 7 as Time.Weekday
-
-
-## Similar to [method get_weekday] but returns an integer value 
-## where Monday = 1 and Sunday = 7, according to the ISO8601 standard.
-func get_weekday_iso() -> int:
-	var weekday: Time.Weekday = get_weekday()
-	return weekday if weekday != 0 else 7
-
-
-## Returns the ordinal day for the given [member year], [member month] and [member day].
-func get_day_of_year() -> int:
-	var days_in_month: Array[int] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-	
-	if is_leap_year():
-		days_in_month[1] = 29
-	
-	var day_number: int = day
-	
-	for i in range(month - 1):
-		day_number += days_in_month[i]
-	
-	return day_number
-
 #region Math over dates
+
 
 ## Add any number of days to this date.
 func add_days(days: int) -> void:
@@ -217,8 +147,8 @@ func add_days(days: int) -> void:
 		subtract_days(-days)
 		return
 	_day += days
-	while _day > get_days_in_month():
-		_day -= get_days_in_month()
+	while _day > DateUtil.get_days_in_month(_year, _month):
+		_day -= DateUtil.get_days_in_month(_year, _month)
 		_month += 1
 		if _month > 12:
 			_month = 1
@@ -239,7 +169,7 @@ func add_months(months: int) -> void:
 	while _month > 12:
 		_month -= 12
 		_year += 1
-	var days_in_new_month: int = get_days_in_month()
+	var days_in_new_month: int = DateUtil.get_days_in_month(_year, _month)
 	if _day > days_in_new_month:
 		_day = days_in_new_month
 
@@ -248,7 +178,7 @@ func add_months(months: int) -> void:
 ## to February 28 if the new year is not a leap year.
 func add_years(years: int) -> void:
 	_year += years
-	if _month == 2 and _day == 29 and not is_leap_year():
+	if _month == 2 and _day == 29 and not DateUtil.is_leap_year(year):
 		_day = 28
 
 
@@ -263,7 +193,7 @@ func subtract_days(days: int) -> void:
 		if _month < 1:
 			_month = 12
 			_year -= 1
-		_day += get_days_in_month()
+		_day += DateUtil.get_days_in_month(_year, _month)
 
 
 ## Subtracts a specified number of months from the date. 
@@ -280,7 +210,7 @@ func subtract_months(months: int) -> void:
 	while _month < 1:
 		_month += 12
 		_year -= 1
-	var days_in_new_month: int = get_days_in_month()
+	var days_in_new_month: int = DateUtil.get_days_in_month(_year, _month)
 	if _day > days_in_new_month:
 		_day = days_in_new_month
 
@@ -289,25 +219,17 @@ func subtract_months(months: int) -> void:
 ## to February 28 if the new year is not a leap year.
 func subtract_years(years: int) -> void:
 	_year -= years
-	if _month == 2 and _day == 29 and not is_leap_year():
+	if _month == 2 and _day == 29 and not DateUtil.is_leap_year(year):
 		_day = 28
 
 
 ## Return the number of days between two Date objects. Is only accurate
 ## when dates are after the year 1582.
 func days_to(date: Date) -> int:
-	return self._to_julian_day() - date._to_julian_day()
+	return (
+		DateUtil.get_julian_day(year, month, day) -
+		DateUtil.get_julian_day(date.year, date.month, date.day)
+	)
 
-
-# Helper function to calculate how many days are between two Date objects
-@warning_ignore("integer_division")
-func _to_julian_day() -> int:
-	# Algorithm to convert a Gregorian date to a Julian Day Number.
-	# This is a simplified version and works for dates after 1582.
-	var a: int = (14 - _month) / 12
-	var y: int = _year + 4800 - a
-	var m: int = _month + 12 * a - 3
-	var jdn: int = _day + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32045
-	return jdn
 
 #endregion

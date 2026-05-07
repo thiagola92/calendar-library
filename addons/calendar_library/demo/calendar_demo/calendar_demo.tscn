@@ -124,6 +124,7 @@ popup/item_1/id = 1
 
 [connection signal="pressed" from="MarginContainer/HBoxContainer/YearContainer/HBoxContainer/PreviousButton" to="." method="_on_previous_button_pressed"]
 [connection signal="pressed" from="MarginContainer/HBoxContainer/YearContainer/HBoxContainer/NextButton" to="." method="_on_next_button_pressed"]
+[connection signal="date_toggled" from="MarginContainer/HBoxContainer/YearContainer/ScrollContainer/YearCalendar" to="." method="_on_year_calendar_date_toggled"]
 [connection signal="item_selected" from="MarginContainer/HBoxContainer/VBoxContainer/LanguageButton" to="." method="_on_language_button_item_selected"]
 [connection signal="item_selected" from="MarginContainer/HBoxContainer/VBoxContainer/WeekdayButton" to="." method="_on_weekday_button_item_selected"]
 [connection signal="toggled" from="MarginContainer/HBoxContainer/VBoxContainer/ShowWeekButton" to="." method="_on_show_week_button_toggled"]

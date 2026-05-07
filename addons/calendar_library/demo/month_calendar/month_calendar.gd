@@ -106,7 +106,7 @@ func _insert_weeks() -> void:
 			button.size_flags_horizontal = Control.SIZE_FILL
 			button.toggled.connect(date_toggled.emit.bind(date))
 			
-			if calendar.get_today().is_equal(date):
+			if Date.get_today().is_equal(date):
 				button.theme_type_variation = "TodayButton"
 			else:
 				button.theme_type_variation = "DayButton"

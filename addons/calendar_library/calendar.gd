@@ -1,3 +1,5 @@
+class_name Calendar
+extends RefCounted
 ## A utility library for generating calendar data.
 ##
 ## Calendar is a comprehensive library for creating calendar views, 
@@ -14,9 +16,6 @@
 ## representations through the CalendarLocale resource. Each Calendar 
 ## object is linked to a CalendarLocale, which can be customized 
 ## or replaced as needed.
-class_name Calendar
-extends RefCounted
-
 
 const _POSIX_PLACEHOLDERS = "(%F|%Y|%y|%m|%B|%b|%-b|%d|%-d|%-m|%-y|%j|%-j|%A|%a|%-a|%u|%w)"
 
@@ -72,12 +71,6 @@ var _posix_regex = RegEx.new()
 
 func _init() -> void:
 	_posix_regex.compile(_POSIX_PLACEHOLDERS)
-
-
-## Returns the current date as a Date object.
-static func get_today() -> Date:
-	var today = Time.get_date_dict_from_system()
-	return Date.new(today.year, today.month, today.day)
 
 
 ## Returns an array with all weekdays in ascending order from [code]first_weekday[/code].
@@ -151,12 +144,6 @@ func get_months_formatted(month_format: MonthFormat = MonthFormat.MONTH_FORMAT_A
 	return months_formatted
 
 
-## Returns [code]true[/code] or [code]false[/code] depending on whether
-## [param year] is a leap year or not.
-static func is_leap_year(year: int) -> bool:
-	return (year % 4 == 0 and (year % 100 != 0 or year % 400 == 0))
-
-
 ## Returns the number of leap days between [param from_year] and
 ## [param to_year]. By default, [param to_year] is exclusive. This
 ## can be changed by setting [param exclusive_to] to [code]false[/code].
@@ -169,29 +156,9 @@ func get_leap_days(from_year: int, to_year: int, exclusive_to: bool = true) -> i
 	return leap_to - leap_from
 
 
-## Returns the weekday of a given date as a [code]Time.Weekday[/code] value 
-## where Sunday = 0 and Saturday = 6 (to align with Godot's Weekday standard).
-@warning_ignore("integer_division")
-func get_weekday(year: int, month: int, day: int) -> Time.Weekday:
-	if not _is_date_valid(year, month, day):
-		return Time.WEEKDAY_SUNDAY
-	
-	# Zeller's Congruence algorithm to find the day of the week
-	var calc_year := year
-	var calc_month := month
-	if calc_month < 3:
-		calc_month += 12
-		calc_year -= 1
-	var k: int = calc_year % 100
-	var j: int = int(calc_year / 100)
-	var f: int = day + (13 * (calc_month + 1) / 5) + k + (k / 4) + (j / 4) - 2 * j
-	# Adjusted Zeller's Congruence for Godot's Sunday = 0
-	return (f + 6) % 7 as Time.Weekday
-
-
 ## Returns the weekday name for a given date.
 func get_weekday_formatted(year: int, month: int, day: int, weekday_format: WeekdayFormat = WeekdayFormat.WEEKDAY_FORMAT_FULL) -> String:
-	var weekday = get_weekday(year, month, day)
+	var weekday = DateUtil.get_weekday(year, month, day)
 	var weekday_format_prefix: String = ""
 	match weekday_format:
 		WeekdayFormat.WEEKDAY_FORMAT_FULL:
@@ -244,23 +211,6 @@ func get_month_formatted(month: int, month_format: MonthFormat = MonthFormat.MON
 	return ""
 
 
-## Returns the number of days in a month. If [param year]
-## is a leap year February will return 29 days.
-func get_days_in_month(year: int, month: int) -> int:
-	if not _is_month_valid(month):
-		return 0
-	
-	var days_in_month: Array[int] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-	if month == 2 and is_leap_year(year):
-		return 29
-	return days_in_month[month - 1]
-
-
-## Returns the number of days in the given year (i.e., 365 or 366 if [param year] is a leap year.
-static func get_days_in_year(year: int) -> int:
-	return 365 if not is_leap_year(year) else 366
-
-
 ## Returns an array representing each month of a given year. Each 
 ## month is also an array of Date objects corresponding to each day in that month.
 ## [br][br]
@@ -298,14 +248,14 @@ func get_calendar_month(year: int, month: int, include_adjacent_days: bool = fal
 	if not _is_month_valid(month):
 		return []
 	
-	var days_in_month: int = get_days_in_month(year, month)
-	var first_day_weekday: Time.Weekday = get_weekday(year, month, 1)
+	var days_in_month: int = DateUtil.get_days_in_month(year, month)
+	var first_day_weekday: Time.Weekday = DateUtil.get_weekday(year, month, 1)
 	var prev_month: int = month - 1
 	var prev_year: int = year
 	if prev_month < 1:
 		prev_month = 12
 		prev_year -= 1
-	var prev_month_days: int = get_days_in_month(prev_year, prev_month)
+	var prev_month_days: int = DateUtil.get_days_in_month(prev_year, prev_month)
 	var next_month: int = month + 1
 	var next_year: int = year
 	if next_month > 12:
@@ -347,14 +297,14 @@ func get_calendar_month(year: int, month: int, include_adjacent_days: bool = fal
 ## useful for representing shortened weeks such as workweeks.
 @warning_ignore("int_as_enum_without_cast")
 func get_calendar_week(year: int, month: int, day: int, days_in_week: int = 7) -> Array[Date]:
-	if not _is_date_valid(year, month, day):
+	if not DateUtil.is_valid(year, month, day):
 		return []
 	if days_in_week < 1:
 		push_error("days_in_week has to be greater than 0. Got: %s" % days_in_week)
 		return []
 	
 	var dates : Array[Date] = []
-	var day_of_week: Time.Weekday = get_weekday(year, month, day)
+	var day_of_week: Time.Weekday = DateUtil.get_weekday(year, month, day)
 	
 	var current_day: Time.Weekday = day - ((day_of_week - first_weekday + 7) % 7)
 	var current_month: int = month
@@ -366,8 +316,8 @@ func get_calendar_week(year: int, month: int, day: int, days_in_week: int = 7) -
 			if current_month < 1:
 				current_month = 12
 				current_year -= 1
-			current_day = get_days_in_month(current_year, current_month) + current_day
-		elif current_day > get_days_in_month(current_year, current_month):
+			current_day = DateUtil.get_days_in_month(current_year, current_month) + current_day
+		elif current_day > DateUtil.get_days_in_month(current_year, current_month):
 			current_day = 1
 			current_month += 1
 			if current_month > 12:
@@ -423,10 +373,10 @@ func set_week_number_system(week_number_system: WeekNumberSystem) -> void:
 
 ## Returns the week number for the given [param year], [param month] and [param day].
 func get_week_number(year: int, month: int, day: int) -> int:
-	if not _is_date_valid(year, month, day):
+	if not DateUtil.is_valid(year, month, day):
 		return 0
 	
-	var weekday_offset: int = (get_weekday(year, month, day) - first_weekday + 7) % 7
+	var weekday_offset: int = (DateUtil.get_weekday(year, month, day) - first_weekday + 7) % 7
 	var week_start: Date = Date.new(year, month, day)
 	week_start.subtract_days(weekday_offset)
 	
@@ -437,7 +387,7 @@ func get_week_number(year: int, month: int, day: int) -> int:
 			majority_day.add_days(3)
 			
 			# The week containing January 4 is always week 1 in the four-day system.
-			var week_one_offset: int = (get_weekday(majority_day.year, 1, 4) - first_weekday + 7) % 7
+			var week_one_offset: int = (DateUtil.get_weekday(majority_day.year, 1, 4) - first_weekday + 7) % 7
 			var week_one_start: Date = Date.new(majority_day.year, 1, 4)
 			week_one_start.subtract_days(week_one_offset)
 			
@@ -446,17 +396,17 @@ func get_week_number(year: int, month: int, day: int) -> int:
 		
 		WeekNumberSystem.WEEK_NUMBER_TRADITIONAL:
 			# Week 1 is the week containing January 1.
-			var week_one_offset: int = (get_weekday(year, 1, 1) - first_weekday + 7) % 7
+			var week_one_offset: int = (DateUtil.get_weekday(year, 1, 1) - first_weekday + 7) % 7
 			var week_one_start: Date = Date.new(year, 1, 1)
 			week_one_start.subtract_days(week_one_offset)
 			
-			var next_week_one_offset: int = (get_weekday(year + 1, 1, 1) - first_weekday + 7) % 7
+			var next_week_one_offset: int = (DateUtil.get_weekday(year + 1, 1, 1) - first_weekday + 7) % 7
 			var next_week_one_start: Date = Date.new(year + 1, 1, 1)
 			next_week_one_start.subtract_days(next_week_one_offset)
 			
 			# Dates can belong to week 1 of the next year or the last week of the previous year.
 			if week_start.is_before(week_one_start):
-				var prev_week_one_offset: int = (get_weekday(year - 1, 1, 1) - first_weekday + 7) % 7
+				var prev_week_one_offset: int = (DateUtil.get_weekday(year - 1, 1, 1) - first_weekday + 7) % 7
 				week_one_start = Date.new(year - 1, 1, 1)
 				week_one_start.subtract_days(prev_week_one_offset)
 			elif not week_start.is_before(next_week_one_start):
@@ -466,23 +416,6 @@ func get_week_number(year: int, month: int, day: int) -> int:
 			return int(floor(days_from_week_one / 7.0)) + 1
 	
 	return 0
-
-
-## Returns the ordinal day for the given [param year], [param month] and [param day].
-func get_day_of_year(year: int, month: int, day: int) -> int:
-	if not _is_date_valid(year, month, day):
-		return 0
-	
-	var days_in_month: Array[int] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-	
-	if is_leap_year(year):
-		days_in_month[1] = 29
-
-	var day_number: int = day
-	for i in range(month - 1):
-		day_number += days_in_month[i]
-
-	return day_number
 
 
 ## Returns an array of all the week numbers of the given month.
@@ -496,7 +429,7 @@ func get_weeks_of_month(year: int, month: int, force_six_weeks: bool = false) ->
 		return []
 	
 	var weeks : Array[int] = []
-	var days_in_month = get_days_in_month(year, month)
+	var days_in_month = DateUtil.get_days_in_month(year, month)
 
 	# Iterate through all days in the month and add each week transition.
 	# This avoids missing a final week that can start near month end.
@@ -535,7 +468,7 @@ func get_days_of_range(days: int, year: int, month: int, day: int, exclusive: bo
 	if days < 0:
 		push_error("days can not be negative. Got: %s" % days)
 		return []
-	if not _is_date_valid(year, month, day):
+	if not DateUtil.is_valid(year, month, day):
 		return []
 	
 	var days_range: Array[Date] = []
@@ -545,7 +478,7 @@ func get_days_of_range(days: int, year: int, month: int, day: int, exclusive: bo
 		var date = Date.new(year, month, day)
 		days_range.append(date)
 		day += 1
-		if day > get_days_in_month(year, month):
+		if day > DateUtil.get_days_in_month(year, month):
 			day = 1
 			month += 1
 			if month > 12:
@@ -591,7 +524,7 @@ func get_days_of_range(days: int, year: int, month: int, day: int, exclusive: bo
 ## [b]%w[/b] - Weekday as a number (Sunday = 0, Saturday = 6).[br]
 @warning_ignore("unused_parameter")
 func get_date_formatted(year: int, month: int, day: int, format: String = "%Y-%m-%d") -> String:
-	if not _is_date_valid(year, month, day):
+	if not DateUtil.is_valid(year, month, day):
 		return ""
 	
 	var results: Array[RegExMatch] = _posix_regex.search_all(format)
@@ -623,10 +556,10 @@ func get_date_formatted(year: int, month: int, day: int, format: String = "%Y-%m
 			"%A": replacement = get_weekday_formatted(year, month, day, WeekdayFormat.WEEKDAY_FORMAT_FULL)
 			"%a": replacement = get_weekday_formatted(year, month, day, WeekdayFormat.WEEKDAY_FORMAT_ABBR)
 			"%-a": replacement = get_weekday_formatted(year, month, day, WeekdayFormat.WEEKDAY_FORMAT_SHORT)
-			"%j": replacement = str(get_day_of_year(year, month, day)).pad_zeros(3)
-			"%-j": replacement = str(get_day_of_year(year, month, day))
-			"%u": replacement = str(get_weekday_iso(year, month, day))
-			"%w": replacement = str(get_weekday(year, month, day))
+			"%j": replacement = str(DateUtil.get_day_of_year(year, month, day)).pad_zeros(3)
+			"%-j": replacement = str(DateUtil.get_day_of_year(year, month, day))
+			"%u": replacement = str(DateUtil.get_weekday_iso(year, month, day))
+			"%w": replacement = str(DateUtil.get_weekday(year, month, day))
 			_: continue
 		
 		result = result.replace(format_posix_placeholder, replacement)
@@ -672,26 +605,8 @@ func _get_shifted_weekday(year: int, month: int , day: int) -> int:
 	return adjusted_weekday
 
 
-# Turns Godot's standard Sunday = 0, Saturday = 6 to the ISO8601 standard
-# where Monday = 1, Sunday = 7.
-func get_weekday_iso(year: int, month: int, day: int) -> int:
-	var weekday: int = get_weekday(year, month, day)
-	return weekday if weekday != 0 else 7
-
-
 func _is_month_valid(month: int) -> bool:
 	if month < 1 or month > 12:
 		push_error("Month has to be 1 - 12. Got: %s" % month)
-		return false
-	return true
-
-
-func _is_date_valid(year: int, month: int, day: int) -> bool:
-	if not _is_month_valid(month):
-		return false
-	
-	var days_in_month: int = 29 if month == 2 and is_leap_year(year) else [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1]
-	if day < 1 or day > days_in_month:
-		push_error("Day is out of range for year/month (%s-%s): %s" % [year, month, day])
 		return false
 	return true
