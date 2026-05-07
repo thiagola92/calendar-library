@@ -1,0 +1,131 @@
+[gd_scene format=3 uid="uid://fnjd62eg1mpl"]
+
+[ext_resource type="Script" uid="uid://dcokr6fsdwr8a" path="res://addons/calendar_library/demo/calendar_demo/calendar_demo.gd" id="1_gk4ok"]
+[ext_resource type="Theme" uid="uid://cffv1mn1p3rjt" path="res://addons/calendar_library/demo/calendar_demo/theme.tres" id="1_o4ybf"]
+[ext_resource type="PackedScene" uid="uid://5x722d2mdkld" path="res://addons/calendar_library/demo/year_calendar/year_calendar.tscn" id="3_854g1"]
+
+[node name="CalendarDemo" type="PanelContainer" unique_id=612380001]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_o4ybf")
+script = ExtResource("1_gk4ok")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1403875518]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=1468003579]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="YearContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer" unique_id=750460383]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer/YearContainer" unique_id=1161696027]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="PreviousButton" type="Button" parent="MarginContainer/HBoxContainer/YearContainer/HBoxContainer" unique_id=2081975212]
+layout_mode = 2
+text = "⬅"
+
+[node name="YearLabel" type="Label" parent="MarginContainer/HBoxContainer/YearContainer/HBoxContainer" unique_id=83058997]
+unique_name_in_owner = true
+layout_mode = 2
+text = "2026"
+
+[node name="NextButton" type="Button" parent="MarginContainer/HBoxContainer/YearContainer/HBoxContainer" unique_id=639080936]
+layout_mode = 2
+text = "⮕"
+
+[node name="DateLabel" type="Label" parent="MarginContainer/HBoxContainer/YearContainer/HBoxContainer" unique_id=1664419751]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Thursday, 7 May"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/HBoxContainer/YearContainer" unique_id=61370113]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="YearCalendar" parent="MarginContainer/HBoxContainer/YearContainer/ScrollContainer" unique_id=793567591 instance=ExtResource("3_854g1")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer" unique_id=2058258685]
+layout_mode = 2
+
+[node name="LanguageLabel" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=98816894]
+layout_mode = 2
+text = "Language"
+
+[node name="LanguageButton" type="OptionButton" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=1339998931]
+unique_name_in_owner = true
+layout_mode = 2
+selected = 0
+item_count = 5
+popup/item_0/text = "English"
+popup/item_0/id = 0
+popup/item_1/text = "German"
+popup/item_1/id = 1
+popup/item_2/text = "Spanish"
+popup/item_2/id = 2
+popup/item_3/text = "Simplified Chinese"
+popup/item_3/id = 3
+popup/item_4/text = "Swedish"
+popup/item_4/id = 4
+
+[node name="WeekdayLabel" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=846929055]
+layout_mode = 2
+text = "First weekday"
+
+[node name="WeekdayButton" type="OptionButton" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=763570120]
+layout_mode = 2
+selected = 0
+item_count = 7
+popup/item_0/text = "Monday"
+popup/item_0/id = 0
+popup/item_1/text = "Tuesday"
+popup/item_1/id = 1
+popup/item_2/text = "Wednesday"
+popup/item_2/id = 2
+popup/item_3/text = "Thursday"
+popup/item_3/id = 3
+popup/item_4/text = "Friday"
+popup/item_4/id = 4
+popup/item_5/text = "Saturday"
+popup/item_5/id = 5
+popup/item_6/text = "Sunday"
+popup/item_6/id = 6
+
+[node name="ShowWeekButton" type="CheckButton" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=209736295]
+layout_mode = 2
+button_pressed = true
+text = "Show week number"
+
+[node name="WeekNumberLabel" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=448726676]
+layout_mode = 2
+text = "Week Number System"
+
+[node name="WeekNumberButton" type="OptionButton" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=283728897]
+layout_mode = 2
+selected = 0
+item_count = 2
+popup/item_0/text = "First four day week"
+popup/item_0/id = 0
+popup/item_1/text = "Traditional"
+popup/item_1/id = 1
+
+[connection signal="pressed" from="MarginContainer/HBoxContainer/YearContainer/HBoxContainer/PreviousButton" to="." method="_on_previous_button_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/YearContainer/HBoxContainer/NextButton" to="." method="_on_next_button_pressed"]
+[connection signal="date_toggled" from="MarginContainer/HBoxContainer/YearContainer/ScrollContainer/YearCalendar" to="." method="_on_year_calendar_date_toggled"]
+[connection signal="item_selected" from="MarginContainer/HBoxContainer/VBoxContainer/LanguageButton" to="." method="_on_language_button_item_selected"]
+[connection signal="item_selected" from="MarginContainer/HBoxContainer/VBoxContainer/WeekdayButton" to="." method="_on_weekday_button_item_selected"]
+[connection signal="toggled" from="MarginContainer/HBoxContainer/VBoxContainer/ShowWeekButton" to="." method="_on_show_week_button_toggled"]
+[connection signal="item_selected" from="MarginContainer/HBoxContainer/VBoxContainer/WeekNumberButton" to="." method="_on_week_number_button_item_selected"]

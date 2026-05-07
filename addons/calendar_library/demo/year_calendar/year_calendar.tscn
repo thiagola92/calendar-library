@@ -1,0 +1,58 @@
+[gd_scene format=3 uid="uid://5x722d2mdkld"]
+
+[ext_resource type="Script" uid="uid://0hbxf7f55swm" path="res://addons/calendar_library/demo/year_calendar/year_calendar.gd" id="1_gk4ok"]
+[ext_resource type="PackedScene" uid="uid://dcyct2rgg5biu" path="res://addons/calendar_library/demo/month_calendar/month_calendar.tscn" id="2_jww11"]
+
+[node name="YearCalendar" type="GridContainer" unique_id=793567591]
+offset_right = 1132.0
+offset_bottom = 908.0
+columns = 4
+script = ExtResource("1_gk4ok")
+year = 2026
+
+[node name="MonthCalendar" parent="." unique_id=1818995938 instance=ExtResource("2_jww11")]
+layout_mode = 2
+month = 1
+
+[node name="MonthCalendar2" parent="." unique_id=587402916 instance=ExtResource("2_jww11")]
+layout_mode = 2
+month = 2
+
+[node name="MonthCalendar3" parent="." unique_id=912726620 instance=ExtResource("2_jww11")]
+layout_mode = 2
+month = 3
+
+[node name="MonthCalendar4" parent="." unique_id=1084513752 instance=ExtResource("2_jww11")]
+layout_mode = 2
+month = 4
+
+[node name="MonthCalendar5" parent="." unique_id=694796315 instance=ExtResource("2_jww11")]
+layout_mode = 2
+
+[node name="MonthCalendar6" parent="." unique_id=1234621614 instance=ExtResource("2_jww11")]
+layout_mode = 2
+month = 6
+
+[node name="MonthCalendar7" parent="." unique_id=711513500 instance=ExtResource("2_jww11")]
+layout_mode = 2
+month = 7
+
+[node name="MonthCalendar8" parent="." unique_id=1827046355 instance=ExtResource("2_jww11")]
+layout_mode = 2
+month = 8
+
+[node name="MonthCalendar9" parent="." unique_id=1951744132 instance=ExtResource("2_jww11")]
+layout_mode = 2
+month = 9
+
+[node name="MonthCalendar10" parent="." unique_id=1042683044 instance=ExtResource("2_jww11")]
+layout_mode = 2
+month = 10
+
+[node name="MonthCalendar11" parent="." unique_id=839887672 instance=ExtResource("2_jww11")]
+layout_mode = 2
+month = 11
+
+[node name="MonthCalendar12" parent="." unique_id=2119520439 instance=ExtResource("2_jww11")]
+layout_mode = 2
+month = 12

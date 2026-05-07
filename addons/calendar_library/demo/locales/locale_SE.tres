@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="CalendarLocale" format=3 uid="uid://dho0hysxyheai"]
+
+[ext_resource type="Script" uid="uid://bghl8u4xhpmoy" path="res://addons/calendar_library/calendar_locale.gd" id="1_hml7q"]
+
+[resource]
+script = ExtResource("1_hml7q")
+monday = "Måndag"
+tuesday = "Tisdag"
+wednesday = "Onsdag"
+thursday = "Torsdag"
+friday = "Fredag"
+saturday = "Lördag"
+sunday = "Söndag"
+abbr_monday = "Mån"
+abbr_tuesday = "Tis"
+abbr_wednesday = "Ons"
+abbr_thursday = "Tor"
+abbr_friday = "Fre"
+abbr_saturday = "Lör"
+abbr_sunday = "Sön"
+short_wednesday = "O"
+short_saturday = "L"
+january = "Januari"
+february = "Februari"
+march = "Mars"
+may = "Maj"
+june = "Juni"
+july = "Juli"
+august = "Augusti"
+october = "Oktober"
+abbr_may = "Maj"
+abbr_october = "Okt"

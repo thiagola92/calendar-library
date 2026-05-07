@@ -1,0 +1,67 @@
+[gd_resource type="Theme" format=3 uid="uid://cffv1mn1p3rjt"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_si5b0"]
+bg_color = Color(0.4392157, 0.7294118, 0.98039216, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4392157, 0.7294118, 0.98039216, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_l37s7"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4392157, 0.7294118, 0.98039216, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fupps"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4392157, 0.7294118, 0.98039216, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qmb43"]
+bg_color = Color(0.4392157, 0.7294118, 0.98039216, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4392157, 0.7294118, 0.98039216, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[resource]
+DayButton/base_type = &"Button"
+DayButton/font_sizes/font_size = 12
+DayButton/styles/pressed = SubResource("StyleBoxFlat_si5b0")
+MonthLabel/base_type = &"Label"
+MonthLabel/font_sizes/font_size = 12
+TodayButton/base_type = &"Button"
+TodayButton/colors/font_color = Color(0.4392157, 0.7294118, 0.98039216, 1)
+TodayButton/colors/font_hover_color = Color(0.4392157, 0.7294118, 0.98039216, 1)
+TodayButton/font_sizes/font_size = 12
+TodayButton/styles/hover = SubResource("StyleBoxFlat_l37s7")
+TodayButton/styles/normal = SubResource("StyleBoxFlat_fupps")
+TodayButton/styles/pressed = SubResource("StyleBoxFlat_qmb43")
+WeekLabel/base_type = &"Label"
+WeekLabel/font_sizes/font_size = 12
+WeekdayLabel/base_type = &"Label"
+WeekdayLabel/font_sizes/font_size = 12

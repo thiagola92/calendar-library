@@ -6,39 +6,51 @@ signal date_toggled(toggled_on: bool, date: Calendar.Date)
 @export var show_weeks: bool = true:
 	set(b):
 		show_weeks = b
+		_is_waiting_refresh = true
 		_refresh.call_deferred()
 
 @export var year: int = Time.get_date_dict_from_system().year:
 	set(y):
 		year = y
+		_is_waiting_refresh = true
 		_refresh.call_deferred()
 
 @export var month: int = Time.get_date_dict_from_system().month:
 	set(m):
 		month = m
+		_is_waiting_refresh = true
 		_refresh.call_deferred()
 
 var calendar: Calendar = Calendar.new():
 	set(c):
 		calendar = c
-		_refresh()
+		_is_waiting_refresh = true
+		_refresh.call_deferred()
 
 var button_group: ButtonGroup = ButtonGroup.new():
 	set(b):
 		button_group = b
-		_refresh()
+		_is_waiting_refresh = true
+		_refresh.call_deferred()
+
+# Let's say that you need to change a bunch of properties in the same frame,
+# each one would trigger a refresh (completely recreate the calendar).
+# This variable prevents refreshs that already took in count the most up-to-date variables.
+var _is_waiting_refresh: bool = false
 
 
 func _refresh() -> void:
-	_update_label()
+	if not _is_waiting_refresh:
+		return
+	
+	var months_formatted = calendar.get_months_formatted(Calendar.MonthFormat.MONTH_FORMAT_FULL)
+	%MonthLabel.text = months_formatted[month - 1]
+	%MonthGrid.columns = 8 if show_weeks else 7
+	_is_waiting_refresh = false
+	
 	_clear_grid()
 	_insert_weekday_names()
 	_insert_weeks()
-
-
-func _update_label() -> void:
-	var months_formatted = calendar.get_months_formatted(Calendar.MonthFormat.MONTH_FORMAT_FULL)
-	%MonthLabel.text = months_formatted[month - 1]
 
 
 func _clear_grid() -> void:
@@ -60,6 +72,7 @@ func _insert_weekday_names() -> void:
 		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		label.size_flags_vertical = Control.SIZE_FILL
 		label.size_flags_horizontal = Control.SIZE_FILL
+		label.theme_type_variation = "WeekdayLabel"
 		
 		%MonthGrid.add_child(label)
 
@@ -79,6 +92,7 @@ func _insert_weeks() -> void:
 			week_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 			week_label.size_flags_vertical = Control.SIZE_FILL
 			week_label.size_flags_horizontal = Control.SIZE_FILL
+			week_label.theme_type_variation = "WeekLabel"
 			
 			%MonthGrid.add_child(week_label)
 		
@@ -93,7 +107,9 @@ func _insert_weeks() -> void:
 			button.toggled.connect(date_toggled.emit.bind(date))
 			
 			if calendar.get_today().is_equal(date):
-				button.add_to_group("today")
+				button.theme_type_variation = "TodayButton"
+			else:
+				button.theme_type_variation = "DayButton"
 			
 			if date.month != month:
 				button.disabled = true
