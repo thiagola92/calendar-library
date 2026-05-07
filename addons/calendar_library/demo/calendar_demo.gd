@@ -5,7 +5,7 @@ func _ready() -> void:
 	cal.set_first_weekday(Time.WEEKDAY_MONDAY)
 	cal.week_number_system = Calendar.WeekNumberSystem.WEEK_NUMBER_FOUR_DAY
 	
-	selected_date = Calendar.Date.today()
+	selected_date = Date.get_today()
 	weekdays_formatted = cal.get_weekdays_formatted(Calendar.WeekdayFormat.WEEKDAY_FORMAT_SHORT)
 	months_formatted = cal.get_months_formatted(Calendar.MonthFormat.MONTH_FORMAT_FULL)
 	
@@ -28,7 +28,7 @@ var year = 2024
 var months_formatted: Array[String]
 var weekdays_formatted: Array[String]
 
-var selected_date: Calendar.Date
+var selected_date: Date
 var selected_date_label: Label
 
 var show_weeks: bool = true
@@ -59,7 +59,7 @@ func populate_year_calendar():
 			month_container.add_child(weekday_label)
 		
 		# Make a referense to the current date so it can be colored in the calendar.
-		var todays_date := Calendar.Date.today()
+		var todays_date := Date.get_today()
 		
 		# Iterate through every week in every month
 		for week in months:
@@ -90,7 +90,7 @@ func populate_year_calendar():
 		month += 1
 
 
-func _on_date_pressed(date: Calendar.Date, date_label: Label):
+func _on_date_pressed(date: Date, date_label: Label):
 	set_selected_state(date_label)
 	set_date_label(date)
 	selected_date = date
@@ -108,7 +108,7 @@ func set_selected_state(date_label: Label):
 	selected_date_label = date_label
 
 
-func set_date_label(date: Calendar.Date):
+func set_date_label(date: Date):
 	%DateLabel.text = cal.get_date_formatted(date.year, date.month, date.day, "%A, %-d %B")
 
 
@@ -227,7 +227,7 @@ func populate_date_picker():
 		var weekday_label = CalendarLabel.new(weekday)
 		month_container.add_child(weekday_label)
 	
-	var todays_date := Calendar.Date.today()
+	var todays_date := Date.get_today()
 	for week in month_calendar:
 		# If show_weeks is true show the week number before all the day labels
 		if show_weeks:

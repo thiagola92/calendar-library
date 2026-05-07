@@ -24,7 +24,7 @@ func _setup_language_button() -> void:
 		%LanguageButton.add_item(language)
 
 
-func _setup_date_label(date: Calendar.Date = null) -> void:
+func _setup_date_label(date: Date = null) -> void:
 	var calendar: Calendar = %YearCalendar.calendar
 	
 	date = date if date else calendar.get_today()

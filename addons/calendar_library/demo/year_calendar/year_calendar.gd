@@ -1,7 +1,7 @@
 @tool
 extends Container
 
-signal date_toggled(toggled_on: bool, date: Calendar.Date)
+signal date_toggled(toggled_on: bool, date: Date)
 
 const MonthCalendar: GDScript = preload("res://addons/calendar_library/demo/month_calendar/month_calendar.gd")
 

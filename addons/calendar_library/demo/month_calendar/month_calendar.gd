@@ -1,7 +1,7 @@
 @tool
 extends Container
 
-signal date_toggled(toggled_on: bool, date: Calendar.Date)
+signal date_toggled(toggled_on: bool, date: Date)
 
 @export var show_weeks: bool = true:
 	set(b):
@@ -84,7 +84,7 @@ func _insert_weeks() -> void:
 		
 		# If show_weeks is true, show the week number at the start of the week
 		if show_weeks:
-			var first_date: Calendar.Date = week[0]
+			var first_date: Date = week[0]
 			var week_number = calendar.get_week_number(first_date.year, first_date.month, first_date.day)
 			var week_label = Label.new()
 			week_label.text = str(week_number)
@@ -97,7 +97,7 @@ func _insert_weeks() -> void:
 			%MonthGrid.add_child(week_label)
 		
 		# Add each day of the week.
-		for date: Calendar.Date in week:
+		for date: Date in week:
 			var button := Button.new()
 			button.text = str(date.day)
 			button.toggle_mode = true
