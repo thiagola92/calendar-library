@@ -43,7 +43,7 @@ func _refresh() -> void:
 	if not _is_waiting_refresh:
 		return
 	
-	var months_formatted = calendar.get_months_formatted(Calendar.MonthFormat.MONTH_FORMAT_FULL)
+	var months_formatted = calendar.locale.get_months(CalendarLocale.NameFormat.FULL)
 	%MonthLabel.text = months_formatted[month - 1]
 	%MonthGrid.columns = 8 if show_weeks else 7
 	_is_waiting_refresh = false
@@ -59,7 +59,7 @@ func _clear_grid() -> void:
 
 
 func _insert_weekday_names() -> void:
-	var weekdays: Array[String] = calendar.get_weekdays_formatted(Calendar.WeekdayFormat.WEEKDAY_FORMAT_SHORT)
+	var weekdays: Array[String] = calendar.locale.get_weekdays(CalendarLocale.NameFormat.SHORT)
 	
 	# If show_weeks is true, add empty space before the weekday names.
 	if show_weeks:

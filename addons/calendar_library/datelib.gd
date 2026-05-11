@@ -1,19 +1,23 @@
-class_name DateUtil
+class_name Datelib
 extends RefCounted
+## Low level methods to deal with year, month and day.
+##
+## This class is suppose to be used by high level classes ([Date], [Calendar]),
+## it makes no effort to check the user input.
 
-const DAYS_IN_MONTH: Array[int] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+# Days in each month for a non leap year.
+const _DAYS_IN_MONTH: Array[int] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
 
 ## Returns the number of days in the given [param year] and [param month].
-## If is a leap year and February, it will return 29 days.
 static func get_days_in_month(year: int, month: int) -> int:
 	if month == 2 and is_leap_year(year):
 		return 29
-	return DAYS_IN_MONTH[month - 1]
+	return _DAYS_IN_MONTH[month - 1]
 
 
 ## Returns the number of days in the given [param year].
-## If is a leap year 366, otherwise 365.
 static func get_days_in_year(year: int) -> int:
 	return 366 if is_leap_year(year) else 365
 
@@ -23,7 +27,7 @@ static func get_day_of_year(year: int, month: int, day: int) -> int:
 	var day_number: int = day
 	
 	for i in range(month - 1):
-		day_number += DAYS_IN_MONTH[i]
+		day_number += _DAYS_IN_MONTH[i]
 	
 	# If we are after February and is leap year, we have to
 	# take in count that it had one day more (29 days instead of 28).
@@ -48,6 +52,20 @@ static func get_julian_day(year: int, month: int, day: int) -> int:
 	var m: int = month + 12 * a - 3
 	var jdn: int = day + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32045
 	return jdn
+
+
+## Returns the number of leap days between [param from_year] and
+## [param to_year]. By default, [param to_year] is exclusive. This
+## can be changed by setting [param exclusive_to] to [code]false[/code].
+@warning_ignore("integer_division")
+static func get_leap_days(from_year: int, to_year: int, exclusive_to: bool = true) -> int:
+	from_year -= 1
+	to_year -= exclusive_to as int
+	
+	var leap_from: int = from_year / 4 - from_year / 100 + from_year / 400
+	var leap_to: int = to_year / 4 - to_year / 100 + to_year / 400
+	
+	return leap_to - leap_from
 
 
 ## Returns the weekday for [param year], [param month] and [param day]
@@ -79,6 +97,9 @@ static func get_weekday_iso(year: int, month: int, day: int) -> int:
 
 ## Returns [code]true[/code] or [code]false[/code] depending
 ## on whether [param year] is a leap year or not.
+## [br][br]
+## [b]Definition[/b]: Type of year that has 366 days, instead of 365 for a common year.
+## This extra day is added to February (making it 29 days).
 static func is_leap_year(year: int) -> bool:
 	return (year % 4 == 0 and (year % 100 != 0 or year % 400 == 0))
 

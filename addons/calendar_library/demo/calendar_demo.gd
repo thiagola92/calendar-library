@@ -2,12 +2,12 @@ extends PanelContainer
 
 
 func _ready() -> void:
-	cal.set_first_weekday(Time.WEEKDAY_MONDAY)
-	cal.week_number_system = Calendar.WeekNumberSystem.WEEK_NUMBER_FOUR_DAY
+	cal.first_weekday = Time.WEEKDAY_MONDAY
+	cal.week_number_system = Calendarlib.WeekNumberSystem.FOUR_DAY
 	
 	selected_date = Date.get_today()
-	weekdays_formatted = cal.get_weekdays_formatted(Calendar.WeekdayFormat.WEEKDAY_FORMAT_SHORT)
-	months_formatted = cal.get_months_formatted(Calendar.MonthFormat.MONTH_FORMAT_FULL)
+	weekdays_formatted = cal.locale.get_weekdays(CalendarLocale.NameFormat.SHORT)
+	months_formatted = cal.locale.get_months(CalendarLocale.NameFormat.FULL)
 	
 	populate_year_calendar()
 	populate_date_picker()
@@ -33,7 +33,7 @@ var selected_date_label: Label
 
 var show_weeks: bool = true
 
-var week_number_system: Calendar.WeekNumberSystem
+var week_number_system: Calendarlib.WeekNumberSystem
 
 var show_week_number: bool = true
 
@@ -140,15 +140,15 @@ func clear_year_calendar():
 
 func _on_first_weekday_option_button_item_selected(index: int) -> void:
 	match index:
-		0: cal.set_first_weekday(Time.WEEKDAY_MONDAY)
-		1: cal.set_first_weekday(Time.WEEKDAY_TUESDAY)
-		2: cal.set_first_weekday(Time.WEEKDAY_WEDNESDAY)
-		3: cal.set_first_weekday(Time.WEEKDAY_THURSDAY)
-		4: cal.set_first_weekday(Time.WEEKDAY_FRIDAY)
-		5: cal.set_first_weekday(Time.WEEKDAY_SATURDAY)
-		6: cal.set_first_weekday(Time.WEEKDAY_SUNDAY)
+		0: cal.first_weekday = Time.WEEKDAY_MONDAY
+		1: cal.first_weekday = Time.WEEKDAY_TUESDAY
+		2: cal.first_weekday = Time.WEEKDAY_WEDNESDAY
+		3: cal.first_weekday = Time.WEEKDAY_THURSDAY
+		4: cal.first_weekday = Time.WEEKDAY_FRIDAY
+		5: cal.first_weekday = Time.WEEKDAY_SATURDAY
+		6: cal.first_weekday = Time.WEEKDAY_SUNDAY
 	
-	weekdays_formatted = cal.get_weekdays_formatted(Calendar.WeekdayFormat.WEEKDAY_FORMAT_SHORT)
+	weekdays_formatted = cal.locale.get_weekdays(CalendarLocale.NameFormat.SHORT)
 	
 	clear_year_calendar()
 	populate_year_calendar()
@@ -156,8 +156,8 @@ func _on_first_weekday_option_button_item_selected(index: int) -> void:
 
 func _on_week_number_system_option_button_item_selected(index: int) -> void:
 	match index:
-		0: cal.set_week_number_system(Calendar.WeekNumberSystem.WEEK_NUMBER_FOUR_DAY)
-		1: cal.set_week_number_system(Calendar.WeekNumberSystem.WEEK_NUMBER_TRADITIONAL)
+		0: cal.week_number_system = Calendarlib.WeekNumberSystem.FOUR_DAY
+		1: cal.week_number_system = Calendarlib.WeekNumberSystem.TRADITIONAL
 		
 	clear_year_calendar()
 	populate_year_calendar()
@@ -187,18 +187,18 @@ func _on_year_plus_pressed() -> void:
 func _on_language_option_button_item_selected(index: int) -> void:
 	match index:
 		0:
-			cal.set_calendar_locale("res://addons/calendar_library/demo/locales/locale_EN.tres")
+			cal.locale = load("res://addons/calendar_library/demo/locales/locale_EN.tres")
 		1:
-			cal.set_calendar_locale("res://addons/calendar_library/demo/locales/locale_DE.tres")
+			cal.locale = load("res://addons/calendar_library/demo/locales/locale_DE.tres")
 		2:
-			cal.set_calendar_locale("res://addons/calendar_library/demo/locales/locale_ES.tres")
+			cal.locale = load("res://addons/calendar_library/demo/locales/locale_ES.tres")
 		3:
-			cal.set_calendar_locale("res://addons/calendar_library/demo/locales/locale_CN.tres")
+			cal.locale = load("res://addons/calendar_library/demo/locales/locale_CN.tres")
 		4:
-			cal.set_calendar_locale("res://addons/calendar_library/demo/locales/locale_SE.tres")
+			cal.locale = load("res://addons/calendar_library/demo/locales/locale_SE.tres")
 	
-	weekdays_formatted = cal.get_weekdays_formatted(Calendar.WeekdayFormat.WEEKDAY_FORMAT_SHORT)
-	months_formatted = cal.get_months_formatted(Calendar.MonthFormat.MONTH_FORMAT_FULL)
+	weekdays_formatted = cal.locale.get_weekdays(CalendarLocale.NameFormat.SHORT)
+	months_formatted = cal.locale.get_months(CalendarLocale.NameFormat.FULL)
 	
 	clear_year_calendar()
 	populate_year_calendar()

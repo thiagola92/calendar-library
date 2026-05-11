@@ -47,15 +47,15 @@ func _on_show_week_button_toggled(toggled_on: bool) -> void:
 
 func _on_language_button_item_selected(index: int) -> void:
 	var calendar: Calendar = %YearCalendar.calendar
+	calendar.locale = load(locales.values()[index])
 	
-	calendar.set_calendar_locale(locales.values()[index])
 	%YearCalendar.refresh()
 
 
 func _on_weekday_button_item_selected(index: int) -> void:
 	var calendar: Calendar = %YearCalendar.calendar
+	calendar.first_weekday = index + 1
 	
-	calendar.set_first_weekday(index + 1)
 	%YearCalendar.refresh()
 
 
@@ -66,5 +66,5 @@ func _on_year_calendar_date_toggled(toggled_on: bool, date: RefCounted) -> void:
 func _on_week_number_button_item_selected(index: int) -> void:
 	var calendar: Calendar = %YearCalendar.calendar
 	
-	calendar.set_week_number_system(index)
+	calendar.week_number_system = index
 	%YearCalendar.refresh()

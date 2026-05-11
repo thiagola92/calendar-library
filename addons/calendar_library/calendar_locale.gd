@@ -7,6 +7,19 @@
 extends Resource
 class_name CalendarLocale
 
+enum NameFormat {
+	## Get the weekday/month full name.
+	FULL,
+	## Get the weekday/month name as an abbreviated version.
+	## Weekday example: "Mon" for "Monday".
+	## Month example: "Jan" for "January".
+	ABBR,
+	## Get the weekday/month in a short form.
+	## Weekday example: "M" for "Monday".
+	## Month example: "J" for "January".
+	SHORT,
+}
+
 ## The standard date format for the locale.
 ## Use Calendar's [method get_date_locale_format] to get a formatted string based on
 ## this format.
@@ -85,3 +98,87 @@ class_name CalendarLocale
 @export var short_october := "O"
 @export var short_november := "N"
 @export var short_december := "D"
+
+
+## Returns the name for a given month.
+func get_month(month: Time.Month, format: NameFormat = NameFormat.ABBR) -> String:
+	var months: Array[String] = get_months(format)
+	return months[month - 1]
+
+
+## Returns an array with all the month's names from "January" to "December" (follows [enum Time.Month] order).
+func get_months(format: NameFormat = NameFormat.ABBR) -> Array[String]:
+	var prefix: String = ""
+	
+	match format:
+		NameFormat.FULL:
+			prefix = ""
+		NameFormat.ABBR:
+			prefix = "abbr_"
+		NameFormat.SHORT:
+			prefix = "short_"
+	
+	var months: Array[String] = [
+		get(prefix + "january"),
+		get(prefix + "february"),
+		get(prefix + "march"),
+		get(prefix + "april"),
+		get(prefix + "may"),
+		get(prefix + "june"),
+		get(prefix + "july"),
+		get(prefix + "august"),
+		get(prefix + "september"),
+		get(prefix + "october"),
+		get(prefix + "november"),
+		get(prefix + "december"),
+	]
+	
+	return months
+
+
+## Returns the weekday name for a given date.
+func get_weekday(
+	weekday: Time.Weekday,
+	format: CalendarLocale.NameFormat = CalendarLocale.NameFormat.FULL
+) -> String:
+	var weekdays: Array[String] = get_weekdays(format)
+	return weekdays[weekday]
+
+
+## Returns an array with all the weekday's names from "Sunday" to "Saturday".[br]
+## The order can be changed through [param start].
+func get_weekdays(
+	format: NameFormat = NameFormat.FULL,
+	start: Time.Weekday = Time.Weekday.WEEKDAY_SUNDAY,
+) -> Array[String]:
+	var prefix: String = ""
+	
+	match format:
+		NameFormat.FULL:
+			prefix = ""
+		NameFormat.ABBR:
+			prefix = "abbr_"
+		NameFormat.SHORT:
+			prefix = "short_"
+	
+	var weekdays: Array[String] = [
+		get(prefix + "sunday"),
+		get(prefix + "monday"),
+		get(prefix + "tuesday"),
+		get(prefix + "wednesday"),
+		get(prefix + "thursday"),
+		get(prefix + "friday"),
+		get(prefix + "saturday"),
+	]
+	
+	# Finish if doesn't need to reorder.
+	if start == Time.Weekday.WEEKDAY_SUNDAY:
+		return weekdays
+	
+	var reordered: Array[String] = []
+	
+	for i in range(7):
+		var index: int = (start + i) % 7
+		reordered.append(weekdays[index])
+	
+	return reordered
