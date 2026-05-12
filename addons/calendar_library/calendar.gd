@@ -14,14 +14,36 @@ extends RefCounted
 ## object is linked to a CalendarLocale, which can be customized 
 ## or replaced as needed.
 
+const _POSIX_PLACEHOLDERS = "(%F|%Y|%y|%m|%B|%b|%-b|%d|%-d|%-m|%-y|%j|%-j|%A|%a|%-a|%u|%w)"
+
+## Rule to how to decide the week number.
+## [br][br]
+## For example, the following week is the 1º week of the year or 53º week of the previous year?
+## [codeblock]
+## January
+## | M  | T  | W  | T  | F  | S  | S  |
+## | 28 | 29 | 30 | 01 | 02 | 03 | 04 |
+## [/codeblock]
+enum WeekNumberSystem {
+	## Follow ISO 8601, where the first week of the year
+	## must contain at least 4 days from the new year.
+	FOUR_DAY,
+	## Tradional, where the first week of the year is always
+	## the one containing January 1.
+	TRADITIONAL,
+}
+
+# Regex used for getting placeholder combinations in get_date_formatted().
+var _posix_regex = RegEx.new()
+
 ## The weekday that is considered the first day of the week.
 ## Takes a [enum Time.Weekday] value where Sunday = 0 and Saturday = 6 
 ## (to align with Godot's Weekday standard)
 var first_weekday: Time.Weekday = Time.WEEKDAY_MONDAY
 
 ## The week number system to use when calculating week numbers.
-## See [enum Calendarlib.WeekNumberSystem]
-var week_number_system : Calendarlib.WeekNumberSystem = Calendarlib.WeekNumberSystem.FOUR_DAY
+## See [enum WeekNumberSystem]
+var week_number_system : WeekNumberSystem = WeekNumberSystem.FOUR_DAY
 
 ## The calendar's localization settings for retrieving
 ## preformatted values. Each calendar object is assigned a CalendarLocale
@@ -29,6 +51,10 @@ var week_number_system : Calendarlib.WeekNumberSystem = Calendarlib.WeekNumberSy
 ## create and configure a new CalendarLocale
 ## resource, then assign it to [code]locale[/code].
 var locale: CalendarLocale = CalendarLocale.new()
+
+
+func _init() -> void:
+	_posix_regex.compile(_POSIX_PLACEHOLDERS)
 
 
 ## Returns an array representing each month of a given year. Each 
@@ -65,7 +91,7 @@ func get_calendar_year(year: int, include_adjacent_days: bool = false, force_six
 ## across multiple months.
 @warning_ignore("int_as_enum_without_cast")
 func get_calendar_month(year: int, month: int, include_adjacent_days: bool = false, force_six_weeks: bool = false) -> Array:
-	if not _is_month_valid(month):
+	if not Datelib.is_valid(year, month, 1):
 		return []
 	
 	var days_in_month: int = Datelib.get_days_in_month(year, month)
@@ -111,46 +137,6 @@ func get_calendar_month(year: int, month: int, include_adjacent_days: bool = fal
 	return calendar
 
 
-## Returns an array of Date objects for each day in the week containing 
-## the specified [param year], [param month], and [param day]. 
-## Use [param days_in_week] to define the number of days included, 
-## useful for representing shortened weeks such as workweeks.
-@warning_ignore("int_as_enum_without_cast")
-func get_calendar_week(year: int, month: int, day: int, days_in_week: int = 7) -> Array[Date]:
-	if not Datelib.is_valid(year, month, day):
-		return []
-	if days_in_week < 1:
-		push_error("days_in_week has to be greater than 0. Got: %s" % days_in_week)
-		return []
-	
-	var dates : Array[Date] = []
-	var day_of_week: Time.Weekday = Datelib.get_weekday(year, month, day)
-	
-	var current_day: Time.Weekday = day - ((day_of_week - first_weekday + 7) % 7)
-	var current_month: int = month
-	var current_year: int = year
-	
-	for i in range(days_in_week):
-		if current_day <= 0:
-			current_month -= 1
-			if current_month < 1:
-				current_month = 12
-				current_year -= 1
-			current_day = Datelib.get_days_in_month(current_year, current_month) + current_day
-		elif current_day > Datelib.get_days_in_month(current_year, current_month):
-			current_day = 1
-			current_month += 1
-			if current_month > 12:
-				current_month = 1
-				current_year += 1
-		
-		var date = Date.new(current_year, current_month, current_day)
-		dates.append(date)
-		current_day += 1
-	
-	return dates
-
-
 ## Returns the week number for the given [param year], [param month] and [param day].
 func get_week_number(year: int, month: int, day: int) -> int:
 	if not Datelib.is_valid(year, month, day):
@@ -161,7 +147,7 @@ func get_week_number(year: int, month: int, day: int) -> int:
 	week_start.subtract_days(weekday_offset)
 	
 	match week_number_system:
-		Calendarlib.WeekNumberSystem.FOUR_DAY:
+		WeekNumberSystem.FOUR_DAY:
 			# The 4th day of the week determines the week-year in the "four-day" system.
 			var majority_day: Date = week_start.duplicate()
 			majority_day.add_days(3)
@@ -174,7 +160,7 @@ func get_week_number(year: int, month: int, day: int) -> int:
 			var days_from_week_one: int = week_start.days_to(week_one_start)
 			return int(floor(days_from_week_one / 7.0)) + 1
 		
-		Calendarlib.WeekNumberSystem.TRADITIONAL:
+		WeekNumberSystem.TRADITIONAL:
 			# Week 1 is the week containing January 1.
 			var week_one_offset: int = (Datelib.get_weekday(year, 1, 1) - first_weekday + 7) % 7
 			var week_one_start: Date = Date.new(year, 1, 1)
@@ -205,7 +191,7 @@ func get_week_number(year: int, month: int, day: int) -> int:
 ## fewer than six weeks. This is beneficial for consistent presentation 
 ## across multiple months.
 func get_weeks_of_month(year: int, month: int, force_six_weeks: bool = false) -> Array[int]:
-	if not _is_month_valid(month):
+	if not Datelib.is_valid(year, month, 1):
 		return []
 	
 	var weeks : Array[int] = []
@@ -307,7 +293,7 @@ func get_date_formatted(year: int, month: int, day: int, format: String = "%Y-%m
 	if not Datelib.is_valid(year, month, day):
 		return ""
 	
-	var results: Array[RegExMatch] = Calendarlib._posix_regex.search_all(format)
+	var results: Array[RegExMatch] = _posix_regex.search_all(format)
 	var format_posix_placeholders: Array = []
 	for result in results:
 		var matched_string = format.substr(result.get_start(), result.get_end() - result.get_start())
@@ -401,10 +387,3 @@ func _get_shifted_weekday(year: int, month: int , day: int) -> int:
 	var f: int = day + (13 * (month + 1) / 5) + k + (k / 4) + (j / 4) - 2 * j
 	var adjusted_weekday: int = (f + 7 - first_weekday + 7) % 7
 	return adjusted_weekday
-
-
-func _is_month_valid(month: int) -> bool:
-	if month < 1 or month > 12:
-		push_error("Month has to be 1 - 12. Got: %s" % month)
-		return false
-	return true

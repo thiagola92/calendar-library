@@ -146,10 +146,10 @@ func get_weekday(
 
 
 ## Returns an array with all the weekday's names from "Sunday" to "Saturday".[br]
-## The order can be changed through [param start].
+## The initial weekday can be changed through [param first].
 func get_weekdays(
 	format: NameFormat = NameFormat.FULL,
-	start: Time.Weekday = Time.Weekday.WEEKDAY_SUNDAY,
+	first: Time.Weekday = Time.WEEKDAY_SUNDAY,
 ) -> Array[String]:
 	var prefix: String = ""
 	
@@ -172,13 +172,13 @@ func get_weekdays(
 	]
 	
 	# Finish if doesn't need to reorder.
-	if start == Time.Weekday.WEEKDAY_SUNDAY:
+	if first == Time.WEEKDAY_SUNDAY:
 		return weekdays
 	
 	var reordered: Array[String] = []
 	
 	for i in range(7):
-		var index: int = (start + i) % 7
+		var index: int = (first + i) % 7
 		reordered.append(weekdays[index])
 	
 	return reordered

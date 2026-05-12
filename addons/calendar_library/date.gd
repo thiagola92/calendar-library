@@ -39,7 +39,7 @@ var _day: int = 1
 ## A static function that returns a [Date] object
 ## with the specific date or [code]null[/code] if the date is invalid.
 ## [codeblock]
-## var date = Datelib.get_date(2026, 5, 7)
+## var date = Date.get_date(2026, 5, 7)
 ##
 ## if date == null:
 ##   print("Invalid date")
@@ -59,7 +59,7 @@ static func get_date(year: int, month: int, day: int) -> Date:
 ## A static function that returns a [Date] object with todays date.
 ## The date is fetched from the system.
 ## [codeblock]
-## var today = Datelib.get_today()
+## var today = Date.get_today()
 ## print(today) # Outputs the current date from the system
 ## [/codeblock]
 static func get_today() -> Date:
@@ -84,10 +84,13 @@ func add_days(days: int) -> void:
 	if days < 0:
 		subtract_days(-days)
 		return
+	
 	_day += days
-	while _day > Datelib.get_days_in_month(_year, _month):
-		_day -= Datelib.get_days_in_month(_year, _month)
+	
+	while _day > get_days_in_month():
+		_day -= get_days_in_month()
 		_month += 1
+		
 		if _month > 12:
 			_month = 1
 			_year += 1
@@ -103,11 +106,15 @@ func add_months(months: int) -> void:
 	if months < 0:
 		subtract_months(-months)
 		return
+	
 	_month += months
+	
 	while _month > 12:
 		_month -= 12
 		_year += 1
-	var days_in_new_month: int = Datelib.get_days_in_month(_year, _month)
+	
+	var days_in_new_month: int = get_days_in_month()
+	
 	if _day > days_in_new_month:
 		_day = days_in_new_month
 
@@ -116,17 +123,15 @@ func add_months(months: int) -> void:
 ## to February 28 if the new year is not a leap year.
 func add_years(years: int) -> void:
 	_year += years
-	if _month == 2 and _day == 29 and not Datelib.is_leap_year(year):
+	
+	if _month == 2 and _day == 29 and not is_leap_year():
 		_day = 28
 
 
 ## Return the number of days between two Date objects. Is only accurate
 ## when dates are after the year 1582.
 func days_to(date: Date) -> int:
-	return (
-		Datelib.get_julian_day(year, month, day) -
-		Datelib.get_julian_day(date.year, date.month, date.day)
-	)
+	return date.get_julian_day() - get_julian_day()
 
 
 ## Returns a new Date object which is a copy of this Date.
@@ -193,13 +198,17 @@ func subtract_days(days: int) -> void:
 	if days < 0:
 		add_days(-days)
 		return
+	
 	_day -= days
+	
 	while _day < 1:
 		_month -= 1
+		
 		if _month < 1:
 			_month = 12
 			_year -= 1
-		_day += Datelib.get_days_in_month(_year, _month)
+		
+		_day += get_days_in_month()
 
 
 ## Subtracts a specified number of months from the date. 
@@ -212,11 +221,15 @@ func subtract_months(months: int) -> void:
 	if months < 0:
 		add_months(-months)
 		return
+		
 	_month -= months
+	
 	while _month < 1:
 		_month += 12
 		_year -= 1
-	var days_in_new_month: int = Datelib.get_days_in_month(_year, _month)
+		
+	var days_in_new_month: int = get_days_in_month()
+	
 	if _day > days_in_new_month:
 		_day = days_in_new_month
 
@@ -225,5 +238,27 @@ func subtract_months(months: int) -> void:
 ## to February 28 if the new year is not a leap year.
 func subtract_years(years: int) -> void:
 	_year -= years
-	if _month == 2 and _day == 29 and not Datelib.is_leap_year(year):
+	
+	if _month == 2 and _day == 29 and not is_leap_year():
 		_day = 28
+
+
+#region Shortcuts (one-line only)
+## Shortcut for [method Datelib.get_day_of_year].
+func get_day_of_year() -> int: return Datelib.get_day_of_year(year, month, day)
+
+## Shortcut for [method Datelib.get_days_in_month].
+func get_days_in_month() -> int: return Datelib.get_days_in_month(year, month)
+
+## Shortcut for [method Datelib.get_julian_day].
+func get_julian_day() -> int: return Datelib.get_julian_day(year, month, day)
+
+## Shortcut for [method Datelib.get_weekday].
+func get_weekday() -> Time.Weekday: return Datelib.get_weekday(year, month, day)
+
+## Shortcut for [method Datelib.get_weekday_iso].
+func get_weekday_iso() -> int: return Datelib.get_weekday_iso(year, month, day)
+
+## Shortcut for [method Datelib.is_leap_year].
+func is_leap_year() -> bool: return Datelib.is_leap_year(year)
+#endregion

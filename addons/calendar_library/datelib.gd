@@ -10,18 +10,6 @@ extends RefCounted
 const _DAYS_IN_MONTH: Array[int] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
 
-## Returns the number of days in the given [param year] and [param month].
-static func get_days_in_month(year: int, month: int) -> int:
-	if month == 2 and is_leap_year(year):
-		return 29
-	return _DAYS_IN_MONTH[month - 1]
-
-
-## Returns the number of days in the given [param year].
-static func get_days_in_year(year: int) -> int:
-	return 366 if is_leap_year(year) else 365
-
-
 ## Returns the ordinal day for the given [param year], [param month] and [param day].
 static func get_day_of_year(year: int, month: int, day: int) -> int:
 	var day_number: int = day
@@ -35,6 +23,18 @@ static func get_day_of_year(year: int, month: int, day: int) -> int:
 		day_number += 1
 	
 	return day_number
+
+
+## Returns the number of days in the given [param year] and [param month].
+static func get_days_in_month(year: int, month: int) -> int:
+	if month == 2 and is_leap_year(year):
+		return 29
+	return _DAYS_IN_MONTH[month - 1]
+
+
+## Returns the number of days in the given [param year].
+static func get_days_in_year(year: int) -> int:
+	return 366 if is_leap_year(year) else 365
 
 
 ## Returns the specific [param year], [param month] and [param day]
